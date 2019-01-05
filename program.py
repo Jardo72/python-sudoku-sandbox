@@ -147,8 +147,12 @@ def _main():
         print("Failed to parse the input file {0}: {1}".format(command_line_arguments.input_file, e))
     except (InvalidPuzzleError, NoSuchAlgorithmError) as e:
         print("Puzzle rejected by the search engine: {0}".format(e))
+    except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
+        print("I/O error: {0}".format(e))
     except (ValueError, RuntimeError) as e:
         print("Unexpected error has occured: {0}".format(e))
+    finally:
+        print()
 
 
 if __name__ == "__main__":
