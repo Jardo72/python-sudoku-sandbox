@@ -32,14 +32,14 @@ from os.path import isfile
 
 from algorithmregistry import SearchAlgorithmRegistry, NoSuchAlgorithmError
 from gridio import GridFormatter, PuzzleParser, InvalidInputError
-from searchengine import SearchEngine, InvalidPuzzleError
+from searchengine import SearchEngine, InvalidPuzzleError, SearchSummary
 
 
-def _section_separator():
+def _section_separator() -> str:
     return "=" * 75
 
 
-def _epilog():
+def _epilog() -> str:
     return """
 The following snippet illustrates the expected format of the input file
 containing the puzzle to be solved.
@@ -60,7 +60,7 @@ containing the puzzle to be solved.
     """
 
 
-def _available_algorithms_as_csv():
+def _available_algorithms_as_csv() -> str:
     return ", ".join(map(lambda algorithm: "'" + algorithm + "'", SearchAlgorithmRegistry.get_available_algorithms()))
 
 
@@ -77,7 +77,7 @@ def _setup_logging():
             filemode = "w")
 
 
-def _create_command_line_arguments_parser():
+def _create_command_line_arguments_parser() -> ArgumentParser:
     parser = ArgumentParser(description = "Python Sudoku Sandbox", epilog = _epilog(), formatter_class = RawTextHelpFormatter)
 
     # positional mandatory arguments
@@ -117,7 +117,7 @@ def _parse_command_line_arguments():
     return params
 
 
-def _print_search_summary(search_summary):
+def _print_search_summary(search_summary: SearchSummary):
     print()
     print(_section_separator())
     print("Number of undefined cells in the puzzle: {0}".format(search_summary.original_puzzle.get_undefined_cell_count()))

@@ -25,6 +25,7 @@ public API of the search engine.
 from enum import Enum, unique
 from logging import getLogger
 from time import perf_counter
+from typing import List, Optional
 
 from algorithmregistry import SearchAlgorithmRegistry
 from grid import Grid
@@ -77,7 +78,9 @@ class SearchSummary:
     including the solution (or final grid in case the search has led to dead end).
     """
 
-    def __init__(self, original_puzzle, algorithm, outcome, final_grid, duration_millis, cell_values_tried):
+    def __init__(self, original_puzzle: Grid, algorithm: str,
+                 outcome: SearchOutcome, final_grid: Grid,
+                 duration_millis: int, cell_values_tried: int):
         self._original_puzzle = original_puzzle
         self._algorithm = algorithm
         self._outcome = outcome
@@ -87,7 +90,7 @@ class SearchSummary:
 
 
     @property
-    def original_puzzle(self):
+    def original_puzzle(self) -> Grid:
         """
         The original puzzle passed to the search.
         """
@@ -95,7 +98,7 @@ class SearchSummary:
 
 
     @property
-    def algorithm(self):
+    def algorithm(self) -> str:
         """
         The name of the search algorithm used to solve the puzzle.
         """
@@ -103,7 +106,7 @@ class SearchSummary:
 
 
     @property
-    def outcome(self):
+    def outcome(self) -> SearchOutcome:
         """
         The outcome of the search indicating whether a solution has been found,
         or a dead end or timeout has been encountered.
@@ -112,7 +115,7 @@ class SearchSummary:
 
 
     @property
-    def final_grid(self):
+    def final_grid(self) -> Grid:
         """
         The final grid achieved at the end of the search. In case of successful search,
         the return value of this method is the solution. In case of failed search
@@ -123,7 +126,7 @@ class SearchSummary:
 
 
     @property
-    def duration_millis(self):
+    def duration_millis(self) -> int:
         """
         The duration of the search in milliseconds.
         """
@@ -131,7 +134,7 @@ class SearchSummary:
 
 
     @property
-    def cell_values_tried(self):
+    def cell_values_tried(self) -> int:
         """
         The number of cell values tried during the search. This value can be
         used to assess the efficiency of the search algorithm.
@@ -159,7 +162,7 @@ class _Stopwatch:
     """
 
     def __init__(self):
-        self.start_time = perf_counter()
+        self.start_time: float = perf_counter()
 
 
     @staticmethod
@@ -167,12 +170,12 @@ class _Stopwatch:
         return _Stopwatch()
 
 
-    def elapsed_time_millis(self):
+    def elapsed_time_millis(self) -> int:
         duration = perf_counter() - self.start_time
         return int(1000 * duration)
 
 
-    def elapsed_time_seconds(self):
+    def elapsed_time_seconds(self) -> float:
         return perf_counter() - self.start_time
 
 
@@ -183,7 +186,7 @@ class _SearchJob:
     step outcome.
     """
 
-    def __init__(self, puzzle, algorithm, timeout_sec):
+    def __init__(self, puzzle: Grid, algorithm, timeout_sec: int):
         self._puzzle = puzzle
         self._algorithm = algorithm
         self._timeout_sec = timeout_sec
@@ -212,29 +215,29 @@ class _SearchJob:
             self._duration_millis = stopwatch.elapsed_time_millis()
 
 
-    def __update_search_state(self, step_outcome):
+    def __update_search_state(self, step_outcome: SearchStepOutcome):
         self._last_step_outcome = step_outcome
         if step_outcome in [SearchStepOutcome.CONTINUE, SearchStepOutcome.SOLUTION_FOUND]:
             self._cell_values_tried += 1
 
 
     @property
-    def last_step_outcome(self):
+    def last_step_outcome(self) -> Optional[SearchStepOutcome]:
         return self._last_step_outcome
 
 
     @property
-    def final_grid(self):
+    def final_grid(self) -> Grid:
         return self._algorithm.last_step_outcome
 
 
     @property
-    def cell_values_tried(self):
+    def cell_values_tried(self) -> int:
         return self._cell_values_tried
 
 
     @property
-    def duration_millis(self):
+    def duration_millis(self) -> Optional[int]:
         return self._duration_millis
 
 
@@ -250,7 +253,7 @@ class SearchEngine:
     """
 
     @staticmethod
-    def find_solution(puzzle_cells, algorithm_name, timeout_sec):
+    def find_solution(puzzle_cells: List[List[int]], algorithm_name: str, timeout_sec: int):
         """
         Tries to find a solution for the given puzzle using the given search algorithm.
 

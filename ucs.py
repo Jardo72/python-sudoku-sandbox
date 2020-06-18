@@ -21,9 +21,9 @@
 This module provides the Unambiguous Candidate Search (UCS) algorithm.
 """
 
-from collections import deque
 from logging import getLogger
 
+from grid import Grid
 from searchsupport import SearchSupport
 from searchalgorithm import SearchStepOutcome
 
@@ -34,12 +34,12 @@ class UnambiguousCandidateSearch:
     Implementation of the UCS search algorithm.
     """
 
-    def start(self, puzzle):
+    def start(self, puzzle: Grid):
         _logger.info("Starting the search")
         self._search_support = SearchSupport(grid = puzzle)
 
 
-    def next_step(self):
+    def next_step(self) -> SearchStepOutcome:
         _logger.info("Starting the next search step")
         candidate = self._search_support.get_unambiguous_candidate()
         if candidate is None:
@@ -62,5 +62,5 @@ class UnambiguousCandidateSearch:
 
 
     @property
-    def last_step_outcome(self):
+    def last_step_outcome(self) -> Grid:
         return self._search_support.grid

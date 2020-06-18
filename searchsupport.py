@@ -28,6 +28,7 @@ use the other classes (except of the CandidateQueryMode enum) directly.
 from collections import deque, OrderedDict
 from enum import Enum, unique
 from logging import getLogger
+from typing import List, Sequence, Optional, Tuple
 
 from grid import Grid, CellStatus
 
@@ -78,13 +79,13 @@ class _BaseCandidateInfo:
     classes.
     """
 
-    def __init__(self, row, column):
+    def __init__(self, row: int, column: int):
         self._row = row
         self._column = column
 
 
     @property
-    def cell_address(self):
+    def cell_address(self) -> Tuple[int, int]:
         """
         The coordinates of the cell the candidate information carried by this object
         is applicable to.
@@ -114,13 +115,13 @@ class UnambiguousCandidate(_BaseCandidateInfo):
     carries the address (i.e. the row and the column) of the concerned cell.
     """
 
-    def __init__(self, row, column, value):
+    def __init__(self, row: int, column: int, value: int):
         super().__init__(row, column)
         self._value = value
 
 
     @property
-    def value(self):
+    def value(self) -> int:
         """
         The only candidate value applicable to the cell with the coordinates carried by this
         object.
@@ -149,13 +150,13 @@ class CandidateList(_BaseCandidateInfo):
     address (i.e. the row and the column) of the concerned cell.
     """
 
-    def __init__(self, row, column, values):
+    def __init__(self, row: int, column: int, values: Sequence[int]):
         super().__init__(row, column)
         self._values = tuple(values)
 
 
     @property
-    def values(self):
+    def values(self) -> Tuple[int, ...]:
         """
         Returns a tuple with all candidate values applicable to the cell with the coordinates
         carried by this candidate list. 
@@ -198,7 +199,7 @@ class _CellPeers:
 
 
     @staticmethod
-    def __create_for_single_cell(row, column):
+    def __create_for_single_cell(row: int, column: int):
         peers_in_row = [(row, c) for c in range(0, 9) if c != column]
         peers_in_column = [(r, column) for r in range(0, 9) if r != row]
 
@@ -221,7 +222,7 @@ class _CandidateValues:
     method as the value 5 is not applicable anymore.
     """
 
-    def __init__(self, bitmask = 0b111111111, applicable_value_count = 9):
+    def __init__(self, bitmask: int = 0b111111111, applicable_value_count: int = 9):
         self._bitmask = bitmask
         self._applicable_value_count = applicable_value_count
 
@@ -231,11 +232,11 @@ class _CandidateValues:
         self._applicable_value_count = 0
 
 
-    def get_applicable_value_count(self):
+    def get_applicable_value_count(self) -> int:
         return self._applicable_value_count
 
 
-    def exclude_value(self, value):
+    def exclude_value(self, value: int):
         _logger.debug("Going to exclude the value %d, bitmask before exclusion = %s", value, format(self._bitmask, "b"))
         value_mask = 1 << (value - 1)
         if self._bitmask & value_mask == value_mask:
@@ -247,12 +248,12 @@ class _CandidateValues:
         return _ExclusionOutcome.UNAMBIGUOUS_CANDIDATE_NOT_FOUND
 
 
-    def get_applicable_values(self):
+    def get_applicable_values(self) -> Tuple[int, ...]:
         result = [value for value in range(1, 10) if self._bitmask & (1 << (value - 1))]
         return tuple(result)
 
 
-    def get_single_remaining_applicable_value(self):
+    def get_single_remaining_applicable_value(self) -> int:
         if self._applicable_value_count != 1:
             message = "Cannot provide single remaining applicable value ({0} candidates remaining)."
             raise RuntimeError(message.format(self._applicable_value_count))
@@ -261,7 +262,7 @@ class _CandidateValues:
                 return value
 
 
-    def is_applicable(self, value):
+    def is_applicable(self, value: int) -> bool:
         value_mask = 1 << (value - 1)
         return self._bitmask & value_mask == value_mask
 
@@ -296,7 +297,7 @@ class _CandidateValueExclusionLogic:
     @staticmethod
     def __create_candidates_from_scratch():
         rows = []
-        for row in range(0, 9):
+        for _ in range(0, 9):
             rows.append(tuple([_CandidateValues() for column in range(0, 9)]))
         return tuple(rows)
 
@@ -310,7 +311,7 @@ class _CandidateValueExclusionLogic:
 
 
     @staticmethod
-    def create_from(grid):
+    def create_from(grid: Grid):
         """
         Creates and returns a new CandidateValueExclusionLogic instance. Before returning
         the above mentioned instance, candidate value exclusion is performed reflecting the
@@ -330,7 +331,7 @@ class _CandidateValueExclusionLogic:
         return exclusion_logic
 
 
-    def apply_and_exclude_cell_value(self, row, column, value):
+    def apply_and_exclude_cell_value(self, row: int, column: int, value: int):
         """
         Applies the given cell value to the cell with the given coordinates and excludes
         the given cell value for the peers of the cell with the coordinates.
@@ -364,7 +365,7 @@ class _CandidateValueExclusionLogic:
         return result
 
 
-    def get_undefined_cell_candidates(self, mode):
+    def get_undefined_cell_candidates(self, mode: CandidateQueryMode):
         """
         Returns a list of candidate values applicable to one of the undefined cells.
 
@@ -388,7 +389,7 @@ class _CandidateValueExclusionLogic:
         raise ValueError(message)
 
 
-    def __get_candidates_for_first_undefined_cell(self):
+    def __get_candidates_for_first_undefined_cell(self) -> Optional[CandidateList]:
         for (row, column) in Grid.get_all_cell_addresses():
             if self._candidates[row][column].get_applicable_value_count() > 0:
                 values = self._candidates[row][column].get_applicable_values()
@@ -407,7 +408,7 @@ class _CandidateValueExclusionLogic:
         return candidate_list
 
 
-    def is_applicable(self, unambiguous_candidate):
+    def is_applicable(self, unambiguous_candidate) -> bool:
         """
         Verifies whether the given unambiguous candidate is applicable.
 
@@ -426,7 +427,7 @@ class _CandidateValueExclusionLogic:
         return self._candidates[row][column].is_applicable(value)
 
 
-    def get_applicable_value_count(self, row, column):
+    def get_applicable_value_count(self, row: int, column: int) -> int:
         """
         Returns the number of candidate values applicable to the cell with the given
         coordinates.
@@ -467,7 +468,7 @@ class _RegionCandidateCells:
         self._applicable_cell_count = applicable_cell_count
 
 
-    def apply_and_exclude_cell_value(self, row, column, value):
+    def apply_and_exclude_cell_value(self, row: int, column: int, value: int):
         _logger.debug("Going to apply/exclude value %d for [%d, %d]", value, row, column)
         row_within_region, column_within_region = self.__get_cell_coordinates_within_this_region(row, column)
         _logger.debug("Cell address within region [%d, %d]", row_within_region, column_within_region)
@@ -521,7 +522,7 @@ class _RegionCandidateCells:
         return self.__update_applicable_value_count()
 
 
-    def __get_cell_coordinates_within_this_region(self, row, column):
+    def __get_cell_coordinates_within_this_region(self, row: int, column: int):
         row_within_region, column_within_region = (-1, -1)
         if (3 * (row // 3)) == self._topmost_row:
             row_within_region = row - self._topmost_row
@@ -531,7 +532,7 @@ class _RegionCandidateCells:
         return (row_within_region, column_within_region)
 
 
-    def __update_applicable_value_count(self):
+    def __update_applicable_value_count(self) -> _ExclusionOutcome:
         new_count = 0
         for shift in range(0, 9):
             mask = 1 << shift
@@ -575,14 +576,14 @@ class _RegionGrid:
     aggregates 9 instances of _RegionCandidateCells.
     """
 
-    def __init__(self, value, regions = None):
+    def __init__(self, value: Optional[int], regions: Sequence[_RegionCandidateCells] = None):
         if regions is None:
             self._regions = tuple([_RegionCandidateCells(row, column, value) for row in [0, 3, 6] for column in [0, 3, 6]])
         else:
-            self._regions = regions
+            self._regions = tuple(regions)
 
 
-    def apply_and_exclude_cell_value(self, row, column, value):
+    def apply_and_exclude_cell_value(self, row: int, column: int, value: int):
         result = None
         for region in self._regions:
             exclusion_outcome = region.apply_and_exclude_cell_value(row, column, value)
@@ -617,7 +618,7 @@ class _CandidateCellExclusionLogic:
             self._region_grids = tuple([grid.copy() for grid in original_exclusion_logic._region_grids])
 
 
-    def apply_and_exclude_cell_value(self, row, column, value):
+    def apply_and_exclude_cell_value(self, row: int, column: int, value: int):
         """
         Applies the given cell value to the cell with the given coordinates and excludes
         all peers of the given cell as candidate cells for the given value.
@@ -670,7 +671,7 @@ class _ExclusionLogic:
         self._candidate_cell_exclusion = candidate_cell_exclusion
 
 
-    def apply_and_exclude_cell_value(self, row, column, value):
+    def apply_and_exclude_cell_value(self, row: int, column: int, value: int):
         """
         Applies the given cell value to the cell with the given coordinates and excludes
         the given cell value for the peers of the cell with the coordinates.
@@ -704,7 +705,7 @@ class _ExclusionLogic:
         return result
 
 
-    def is_applicable(self, unambiguous_candidate):
+    def is_applicable(self, unambiguous_candidate) -> bool:
         """
         Verifies whether the given unambiguous candidate is applicable.
 
@@ -721,7 +722,7 @@ class _ExclusionLogic:
         return self._candidate_value_exclusion.is_applicable(unambiguous_candidate)
 
 
-    def get_applicable_value_count(self, row, column):
+    def get_applicable_value_count(self, row: int, column: int) -> int:
         """
         Returns the number of candidate values applicable to the cell with the given
         coordinates.
@@ -738,7 +739,7 @@ class _ExclusionLogic:
         return self._candidate_value_exclusion.get_applicable_value_count(row, column)
 
 
-    def get_undefined_cell_candidates(self, mode):
+    def get_undefined_cell_candidates(self, mode: CandidateQueryMode):
         """
         Returns a list of candidate values applicable to one of the undefined cells.
 
@@ -769,7 +770,7 @@ class SearchSupport:
     candidate values for the grid.
     """
 
-    def __init__(self, grid = None, original = None):
+    def __init__(self, grid: Grid = None, original = None):
         """
         Initializer allowing to create a new instance of this class either based on
         the given Grid, or as a clone of the given SearchSupport instance. In any of
@@ -792,7 +793,7 @@ class SearchSupport:
 
 
     @staticmethod
-    def __is_ordinary_constructor(grid, original):
+    def __is_ordinary_constructor(grid: Grid, original) -> bool:
         return original is None and isinstance(grid, Grid)
 
 
@@ -809,7 +810,7 @@ class SearchSupport:
 
 
     @staticmethod
-    def __is_copy_constructor(grid, original):
+    def __is_copy_constructor(grid: Grid, original) -> bool:
         return grid is None and isinstance(original, SearchSupport)
 
 
@@ -820,14 +821,14 @@ class SearchSupport:
 
 
     @property
-    def grid(self):
+    def grid(self) -> Grid:
         """
         Provides a clone of the underlying grid.
         """
         return self._grid.copy()
 
 
-    def has_completed_grid(self):
+    def has_completed_grid(self) -> bool:
         """
         Verifies whether the underlying grid is already completed.
 
@@ -838,7 +839,7 @@ class SearchSupport:
         return self._grid.is_complete()
 
 
-    def set_cell_value(self, row, column, value):
+    def set_cell_value(self, row: int, column: int, value: int):
         """
         Sets the cell with the given coordinates to the given value, assumed the
         cell with the given coordinates is empty (i.e. its value is undefined).
@@ -852,7 +853,7 @@ class SearchSupport:
             row (int):      The row coordinate of the cell whose value is to
                             be set. Zero corresponds to the first row, eight
                             corresponds to the last row.
-            column (int)    The column coordinate of the cell whose value is to
+            column (int):   The column coordinate of the cell whose value is to
                             be set. Zero corresponds to the first column, eight
                             corresponds to the last column.
             value (int):    The new value for the given cell.
@@ -869,7 +870,7 @@ class SearchSupport:
             self._candidate_queue.extend(candidate_list)
 
 
-    def has_empty_cells_without_applicable_candidates(self):
+    def has_empty_cells_without_applicable_candidates(self) -> bool:
         """
         Verifies whether the underlying grid contains at least one undefined cell for
         which all nine values have been already excluded (i.e. no candidate value is
@@ -907,7 +908,7 @@ class SearchSupport:
         return None
 
 
-    def get_undefined_cell_candidates(self, mode):
+    def get_undefined_cell_candidates(self, mode: CandidateQueryMode):
         """
         Returns candidate values applicable to one of the undefined cells of the
         underlying grid.

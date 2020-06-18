@@ -33,6 +33,7 @@ a brute force algorithm based on stack.
 from collections import deque
 from logging import getLogger
 
+from grid import Grid
 from searchsupport import CandidateQueryMode, SearchSupport
 from searchalgorithm import SearchStepOutcome
 
@@ -63,7 +64,7 @@ class _SearchGraphNode:
 
 
     @property
-    def already_exhausted(self):
+    def already_exhausted(self) -> bool:
         if self._candidate_list is None:
             return True
         return self._current_index >= len(self._candidate_list)
@@ -133,12 +134,12 @@ class _DepthFirstSearch:
     implementations of search algorithm.
     """
 
-    def __init__(self, mode):
+    def __init__(self, candidate_query_mode: CandidateQueryMode):
         self._stack = _SearchGraphNodeStack()
-        self._candidate_query_mode = mode
+        self._candidate_query_mode = candidate_query_mode
 
 
-    def start(self, puzzle):
+    def start(self, puzzle: Grid):
         _logger.info("Starting the search")
         self._last_step_outcome = puzzle
         search_support = SearchSupport(puzzle.copy())
@@ -150,7 +151,7 @@ class _DepthFirstSearch:
         self._stack.push(node)
 
 
-    def next_step(self):
+    def next_step(self) -> SearchStepOutcome:
         _logger.info("Starting the next search step")
         node = self._stack.backtrack_to_first_unexhausted_node()
         if node is None:
@@ -177,7 +178,7 @@ class _DepthFirstSearch:
 
 
     @property
-    def last_step_outcome(self):
+    def last_step_outcome(self) -> Grid:
         return self._last_step_outcome
 
 

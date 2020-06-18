@@ -168,7 +168,7 @@ class Grid:
         return Grid.__cell_addresses
 
 
-    def get_undefined_cell_count(self):
+    def get_undefined_cell_count(self) -> int:
         """
         Returns the number of undefined cells within this grid.
 
@@ -179,7 +179,7 @@ class Grid:
         return self._undefined_cell_count
 
 
-    def get_cell_value(self, row, column):
+    def get_cell_value(self, row: int, column: int) -> int:
         """
         Returns the value of the cell with the given coordinates.
 
@@ -198,7 +198,7 @@ class Grid:
         return self._cells[row][column].value
 
 
-    def get_cell_status(self, row, column):
+    def get_cell_status(self, row: int, column: int) -> CellStatus:
         """
         Returns the status of the cell with the given coordinates.
 
@@ -217,7 +217,7 @@ class Grid:
         return self._cells[row][column].status
 
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """
         Verifies whether this grid is valid. An incomplete grid (i.e. grid with at least
         one undefined cell) is also valid if it does not violate the Sudoku rules.
@@ -248,7 +248,7 @@ class Grid:
         return True
 
 
-    def is_complete(self):
+    def is_complete(self) -> bool:
         """
         Verifies whether each and every cell contained in this grid has a value.
         This method does not care about validity. In other words, a grid without
@@ -262,7 +262,7 @@ class Grid:
         return self._undefined_cell_count == 0
 
 
-    def set_cell_value(self, row, column, value):
+    def set_cell_value(self, row: int, column: int, value: int):
         """
         Sets the cell with the given coordinates to the given value, assumed the
         cell with the given coordinates is empty (i.e. its value is undefined).

@@ -32,9 +32,10 @@ a brute force algorithm based on queue.
 
 from collections import deque
 from logging import getLogger
+from typing import Tuple
 
 from searchsupport import CandidateQueryMode, SearchSupport
-from grid import Grid, CellStatus
+from grid import Grid
 from searchalgorithm import SearchStepOutcome
 
 _logger = getLogger()
@@ -46,7 +47,7 @@ class _StepInput:
     algorithm.
     """
 
-    def __init__(self, search_support, row, column, value):
+    def __init__(self, search_support, row: int, column: int, value: int):
         self._search_support = search_support
         self._row = row
         self._column = column
@@ -59,12 +60,12 @@ class _StepInput:
 
 
     @property
-    def cell_address(self):
+    def cell_address(self) -> Tuple[int, int]:
         return (self._row, self._column)
 
 
     @property
-    def value(self):
+    def value(self) -> int:
         return self._value
 
 
@@ -74,24 +75,24 @@ class _BreadthFirstSearch:
     implementations of search algorithm.
     """
 
-    def __init__(self, candidate_query_mode):
+    def __init__(self, candidate_query_mode: CandidateQueryMode):
         self._queue = deque()
         self._candidate_query_mode = candidate_query_mode
 
 
-    def start(self, puzzle):
+    def start(self, puzzle: Grid):
         _logger.info("Starting the search")
         self._last_step_outcome = puzzle
         self.__enqueue_steps(SearchSupport(puzzle.copy()))
 
 
-    def next_step(self):
+    def next_step(self) -> SearchStepOutcome:
         _logger.info("Starting the next search step")
         return self.__process_next_step_from_queue()
 
 
     @property
-    def last_step_outcome(self):
+    def last_step_outcome(self) -> Grid:
         return self._last_step_outcome
 
 

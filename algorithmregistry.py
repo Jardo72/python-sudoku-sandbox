@@ -24,6 +24,7 @@ a new search algorithm has been implemented, it has to be added to this module.
 """
 
 from logging import getLogger
+from typing import Tuple
 
 from bfs import NaiveBreadthFirstSearch, SmartBreadthFirstSearch
 from dfs import NaiveDepthFirstSearch, SmartDepthFirstSearch
@@ -66,7 +67,7 @@ class SearchAlgorithmRegistry:
     __entries = _create_registry_entries()
 
     @staticmethod
-    def create_algorithm_instance(algorithm_name):
+    def create_algorithm_instance(algorithm_name: str):
         """
         Creates and returns a new instance of the search algorithm with the given name.
 
@@ -90,7 +91,7 @@ class SearchAlgorithmRegistry:
 
 
     @staticmethod
-    def get_available_algorithms():
+    def get_available_algorithms() -> Tuple[str, ...]:
         """
         Creates and returns a tuple containing the names of all search algorithms this
         class can instantiate.

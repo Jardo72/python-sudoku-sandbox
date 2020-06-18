@@ -25,15 +25,16 @@ This module provides classes allowing to:
 
 from io import StringIO
 from sys import stdout
+from typing import List, Optional
 
 from grid import Grid, CellStatus
 
 
-def _border_line_template():
+def _border_line_template() -> str:
     return "+-------+-------+-------+"
 
 
-def _cell_line_template():
+def _cell_line_template() -> str:
     return "| ? ? ? | ? ? ? | ? ? ? |"
 
 
@@ -69,7 +70,7 @@ class PuzzleParser:
 
 
     @staticmethod
-    def read_from_file(filename):
+    def read_from_file(filename: str) -> List[List[int]]:
         """
         Reads the input file with the given filename and parses the textual representation
         of the grid contained in it.
@@ -92,7 +93,7 @@ class PuzzleParser:
 
 
     @staticmethod
-    def read_from_string(grid_as_string):
+    def read_from_string(grid_as_string: str) -> List[List[int]]:
         """
         Reads and parses the given textual representation of a grid.
 
@@ -113,14 +114,14 @@ class PuzzleParser:
             return parser.__get_cells()
 
 
-    def __parse_border_line(self, index):
+    def __parse_border_line(self, index: int):
         if index >= len(self._lines):
             raise InvalidInputError("Row {0} is missing.".format(index + 1))
         if self._lines[index] != _border_line_template():
             raise InvalidInputError("Row {0} is not a valid border line.".format(index + 1))
 
 
-    def __parse_cell_line(self, row_index):
+    def __parse_cell_line(self, row_index: int) -> List[int]:
         template = _cell_line_template()
         result = []
         if row_index >= len(self._lines):
@@ -136,14 +137,14 @@ class PuzzleParser:
         return result
 
 
-    def __parse_and_validate_cell_value(self, row_index, char_index):
+    def __parse_and_validate_cell_value(self, row_index: int, char_index: int) -> Optional[int]:
         if self._lines[row_index][char_index] not in " 123456789":
             raise InvalidInputError("Invalid cell value '{0}' found in row {1}.".format(self._lines[row_index][char_index], row_index + 1))
         if self._lines[row_index][char_index] == ' ':
             return None
         return int(self._lines[row_index][char_index])
 
-    def __get_cells(self):
+    def __get_cells(self) -> List[List[int]]:
         result = []
         for index in range(0, 13):
             if index in [1, 2, 3, 5, 6, 7, 9, 10, 11]:
@@ -187,7 +188,7 @@ class GridFormatter:
 
 
     @staticmethod
-    def write_to_file(grid, filename):
+    def write_to_file(grid: Grid, filename: str):
         """
         Writes the given grid to the file with the given filename.
 
@@ -203,7 +204,7 @@ class GridFormatter:
 
 
     @staticmethod
-    def write_to_console(grid):
+    def write_to_console(grid: Grid):
         """
         Writes the given grid to the standard output. In order to distinguish
         predefined cells from completed cells, ANSI escape sequences are used
@@ -217,7 +218,7 @@ class GridFormatter:
 
 
     @staticmethod
-    def write_to_string(grid):
+    def write_to_string(grid: Grid) -> str:
         """
         Writes the given grid to a string and returns the string.
 
@@ -251,7 +252,7 @@ class GridFormatter:
         self.output.write("\n")
 
 
-    def __write_cells(self, row):
+    def __write_cells(self, row: int):
         output = _cell_line_template()
         for column in range(0, 9):
             cell_value = " "
@@ -264,6 +265,6 @@ class GridFormatter:
         self.output.write("\n")
 
 
-    def __decorate_with_color(self, cell_value):
+    def __decorate_with_color(self, cell_value: str) -> str:
         return "\x1b[1;31;47m" + cell_value + "\x1b[0m"
 
