@@ -168,7 +168,7 @@ class GridFormatter:
         resources like open files.
     """
 
-    def __init__(self, grid, output, use_colors):
+    def __init__(self, grid: Grid, output, use_colors: bool):
         """
         Internal initializer which is not to be used directly. Constructs a new formatter
         that will format the given grid.

@@ -27,6 +27,7 @@ class, this module also provides:
 from collections import Counter, namedtuple
 from enum import Enum, unique
 from logging import getLogger
+from typing import Optional, Sequence, Tuple
 
 _logger = getLogger()
 
@@ -65,7 +66,7 @@ class _ValidationBlocks:
 
 
     @staticmethod
-    def __single_region(topmost_row, leftmost_column):
+    def __single_region(topmost_row: int, leftmost_column: int) -> Tuple[Tuple[int, int], ...]:
         result = [(row, column) for row in range(topmost_row, topmost_row + 3) for column in range(leftmost_column, leftmost_column + 3)]
         return tuple(result)
 
@@ -98,7 +99,8 @@ class Grid:
     __validation_blocks = _ValidationBlocks.create()
 
 
-    def __init__(self, cell_values = None, original = None):
+    def __init__(self, cell_values: Optional[Sequence[Sequence[Optional[int]]]] = None,
+                 original = None):
         """
         Initializer allowing to create a new Grid either using the given cell values, or as
         a clone of the given grid. In any of the two cases, use only one of the two arguments
@@ -127,12 +129,12 @@ class Grid:
 
 
     @staticmethod
-    def __is_ordinary_constructor(cell_values, original):
+    def __is_ordinary_constructor(cell_values, original) -> bool:
         return original is None and isinstance(cell_values, list)
 
 
     @staticmethod
-    def __is_copy_constructor(cell_values, original):
+    def __is_copy_constructor(cell_values, original) -> bool:
         return cell_values is None and isinstance(original, Grid)
 
 
@@ -152,14 +154,14 @@ class Grid:
 
 
     @staticmethod
-    def __convert_to_cell(cell_values, row, column):
+    def __convert_to_cell(cell_values, row: int, column: int) -> _Cell:
         if (cell_values[row][column] is None):
             return Grid.__undefined_cell
         return Grid.__predefined_cells[cell_values[row][column]]
 
 
     @staticmethod
-    def get_all_cell_addresses():
+    def get_all_cell_addresses() -> Tuple[Tuple[int, int], ...]:
         """
         Returns a tuple containing addresses of all 81 cells comprising the grid. Each address
         is represented by a tuple with two elements. The first element represents teh row, the
@@ -233,7 +235,7 @@ class Grid:
         return True
 
 
-    def __is_valid_block(self, block):
+    def __is_valid_block(self, block) -> bool:
         counter = Counter()
         for cell_address in block:
             row, column = cell_address

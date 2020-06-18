@@ -28,7 +28,7 @@ use the other classes (except of the CandidateQueryMode enum) directly.
 from collections import deque, OrderedDict
 from enum import Enum, unique
 from logging import getLogger
-from typing import List, Sequence, Optional, Tuple
+from typing import Sequence, Optional, Tuple
 
 from grid import Grid, CellStatus
 
@@ -236,7 +236,7 @@ class _CandidateValues:
         return self._applicable_value_count
 
 
-    def exclude_value(self, value: int):
+    def exclude_value(self, value: int) -> _ExclusionOutcome:
         _logger.debug("Going to exclude the value %d, bitmask before exclusion = %s", value, format(self._bitmask, "b"))
         value_mask = 1 << (value - 1)
         if self._bitmask & value_mask == value_mask:
@@ -365,7 +365,7 @@ class _CandidateValueExclusionLogic:
         return result
 
 
-    def get_undefined_cell_candidates(self, mode: CandidateQueryMode):
+    def get_undefined_cell_candidates(self, mode: CandidateQueryMode) -> Optional[CandidateList]:
         """
         Returns a list of candidate values applicable to one of the undefined cells.
 
@@ -397,7 +397,7 @@ class _CandidateValueExclusionLogic:
         return None
 
 
-    def __get_candidates_for_undefined_cell_with_least_candidates(self):
+    def __get_candidates_for_undefined_cell_with_least_candidates(self) -> Optional[CandidateList]:
         candidate_list = None
         for (row, column) in Grid.get_all_cell_addresses():
             count_for_current_cell = self._candidates[row][column].get_applicable_value_count()
@@ -460,7 +460,8 @@ class _RegionCandidateCells:
 
     __column_peers = {0: 0b110110110, 1: 0b101101101, 2: 0b011011011}
 
-    def __init__(self, topmost_row, leftmost_column, value, bitmask = 0b111111111, applicable_cell_count = 9):
+    def __init__(self, topmost_row: int, leftmost_column: int, value: int,
+                 bitmask: int = 0b111111111, applicable_cell_count: int = 9):
         self._topmost_row = topmost_row
         self._leftmost_column = leftmost_column
         self._value = value
