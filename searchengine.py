@@ -25,7 +25,7 @@ public API of the search engine.
 from enum import Enum, unique
 from logging import getLogger
 from time import perf_counter
-from typing import List, Optional
+from typing import Optional, Sequence
 
 from algorithmregistry import SearchAlgorithmRegistry
 from grid import Grid
@@ -253,7 +253,7 @@ class SearchEngine:
     """
 
     @staticmethod
-    def find_solution(puzzle_cells: List[List[int]], algorithm_name: str, timeout_sec: int):
+    def find_solution(puzzle_cells: Sequence[Sequence[int]], algorithm_name: str, timeout_sec: int) -> SearchSummary:
         """
         Tries to find a solution for the given puzzle using the given search algorithm.
 
@@ -299,7 +299,7 @@ class SearchEngine:
 
 
     @staticmethod
-    def __convert_to_search_outcome(step_outcome):
+    def __convert_to_search_outcome(step_outcome: Optional[SearchStepOutcome]) -> SearchOutcome:
         if step_outcome is SearchStepOutcome.SOLUTION_FOUND:
             return SearchOutcome.SOLUTION_FOUND
         if step_outcome is SearchStepOutcome.ALGORITHM_DEAD_END:

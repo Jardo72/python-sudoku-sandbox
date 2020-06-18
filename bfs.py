@@ -47,7 +47,7 @@ class _StepInput:
     algorithm.
     """
 
-    def __init__(self, search_support, row: int, column: int, value: int):
+    def __init__(self, search_support: SearchSupport, row: int, column: int, value: int):
         self._search_support = search_support
         self._row = row
         self._column = column
@@ -55,7 +55,7 @@ class _StepInput:
 
 
     @property
-    def search_support(self):
+    def search_support(self) -> SearchSupport:
         return self._search_support
 
 
@@ -96,7 +96,7 @@ class _BreadthFirstSearch:
         return self._last_step_outcome
 
 
-    def __enqueue_steps(self, search_support):
+    def __enqueue_steps(self, search_support: SearchSupport):
         if search_support.has_empty_cells_without_applicable_candidates():
             _logger.info("Empty cells without applicable candidates found, nothing will be added to queue")
             return
@@ -107,7 +107,7 @@ class _BreadthFirstSearch:
             self._queue.append(_StepInput(search_support.copy(), row, column, single_value))
 
 
-    def __process_next_step_from_queue(self):
+    def __process_next_step_from_queue(self) -> SearchStepOutcome:
         if len(self._queue) == 0:
             _logger.info("Empty queue, going to abort the search")
             return SearchStepOutcome.PUZZLE_DEAD_END
