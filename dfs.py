@@ -34,6 +34,7 @@ from collections import deque
 from logging import getLogger
 
 from grid import Grid
+from searchalgorithm import AbstractSearchAlgorithm
 from searchsupport import CandidateQueryMode, SearchSupport
 from searchalgorithm import SearchStepOutcome
 
@@ -128,7 +129,7 @@ class _SearchGraphNodeStack:
         return self._entries[-1]
 
 
-class _DepthFirstSearch:
+class _DepthFirstSearch(AbstractSearchAlgorithm):
     """
     Base class providing functionality common to both depth-first search (DFS)
     implementations of search algorithm.

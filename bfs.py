@@ -34,6 +34,7 @@ from collections import deque
 from logging import getLogger
 from typing import Tuple
 
+from searchalgorithm import AbstractSearchAlgorithm
 from searchsupport import CandidateQueryMode, SearchSupport
 from grid import Grid
 from searchalgorithm import SearchStepOutcome
@@ -69,14 +70,14 @@ class _StepInput:
         return self._value
 
 
-class _BreadthFirstSearch:
+class _BreadthFirstSearch(AbstractSearchAlgorithm):
     """
     Base class providing functionality common to both breadth-first search (BFS)
     implementations of search algorithm.
     """
 
     def __init__(self, candidate_query_mode: CandidateQueryMode):
-        self._queue = deque()
+        self._queue: deque = deque()
         self._candidate_query_mode = candidate_query_mode
 
 

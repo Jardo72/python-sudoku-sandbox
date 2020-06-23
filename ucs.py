@@ -24,12 +24,13 @@ This module provides the Unambiguous Candidate Search (UCS) algorithm.
 from logging import getLogger
 
 from grid import Grid
+from searchalgorithm import AbstractSearchAlgorithm
 from searchsupport import SearchSupport
 from searchalgorithm import SearchStepOutcome
 
 _logger = getLogger()
 
-class UnambiguousCandidateSearch:
+class UnambiguousCandidateSearch(AbstractSearchAlgorithm):
     """
     Implementation of the UCS search algorithm.
     """

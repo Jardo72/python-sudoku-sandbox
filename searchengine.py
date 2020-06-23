@@ -29,7 +29,7 @@ from typing import Optional, Sequence
 
 from algorithmregistry import SearchAlgorithmRegistry
 from grid import Grid
-from searchalgorithm import SearchStepOutcome
+from searchalgorithm import AbstractSearchAlgorithm, SearchStepOutcome
 
 
 _logger =  getLogger()
@@ -186,12 +186,12 @@ class _SearchJob:
     step outcome.
     """
 
-    def __init__(self, puzzle: Grid, algorithm, timeout_sec: int):
+    def __init__(self, puzzle: Grid, algorithm: AbstractSearchAlgorithm, timeout_sec: int):
         self._puzzle = puzzle
         self._algorithm = algorithm
         self._timeout_sec = timeout_sec
         self._last_step_outcome = None
-        self._duration_millis = None
+        self._duration_millis = -1
         self._cell_values_tried = 0
 
 
@@ -237,7 +237,7 @@ class _SearchJob:
 
 
     @property
-    def duration_millis(self) -> Optional[int]:
+    def duration_millis(self) -> int:
         return self._duration_millis
 
 
@@ -295,7 +295,12 @@ class SearchEngine:
             search_outcome = SearchOutcome.TIMEOUT
 
         _logger.info("Search finished, outcome = %s", search_outcome)
-        return SearchSummary(original_puzzle = puzzle, algorithm = algorithm_name, outcome = search_outcome, final_grid = search_job.final_grid, duration_millis = search_job.duration_millis, cell_values_tried = search_job.cell_values_tried)
+        return SearchSummary(original_puzzle = puzzle,
+                             algorithm = algorithm_name,
+                             outcome = search_outcome,
+                             final_grid = search_job.final_grid,
+                             duration_millis = search_job.duration_millis,
+                             cell_values_tried = search_job.cell_values_tried)
 
 
     @staticmethod

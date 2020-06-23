@@ -236,7 +236,7 @@ class Grid:
 
 
     def __is_valid_block(self, block) -> bool:
-        counter = Counter()
+        counter: Counter = Counter()
         for cell_address in block:
             row, column = cell_address
             cell_value = self._cells[row][column].value

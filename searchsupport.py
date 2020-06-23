@@ -260,6 +260,7 @@ class _CandidateValues:
         for value in range(1, 10):
             if self._bitmask == (1 << (value - 1)):
                 return value
+        raise RuntimeError("Unexpected statement reached.")
 
 
     def is_applicable(self, value: int) -> bool:

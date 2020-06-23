@@ -23,6 +23,9 @@ the particular search algorithm implementations.
 """
 
 from enum import Enum, unique
+from abc import ABC, abstractmethod
+
+from grid import Grid
 
 @unique
 class SearchStepOutcome(Enum):
@@ -57,3 +60,22 @@ class SearchStepOutcome(Enum):
 
     ALGORITHM_DEAD_END = 4
 
+
+class AbstractSearchAlgorithm(ABC):
+    """
+    Abstract base class prescribing the interface any search algorithm implementation
+    has to implement.
+    """
+
+    @abstractmethod
+    def start(self, puzzle: Grid) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def next_step(self) -> SearchStepOutcome:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def last_step_outcome(self) -> Grid:
+        raise NotImplementedError

@@ -28,6 +28,7 @@ from typing import Tuple
 
 from bfs import NaiveBreadthFirstSearch, SmartBreadthFirstSearch
 from dfs import NaiveDepthFirstSearch, SmartDepthFirstSearch
+from searchalgorithm import AbstractSearchAlgorithm
 from ucs import UnambiguousCandidateSearch
 
 
@@ -67,7 +68,7 @@ class SearchAlgorithmRegistry:
     __entries = _create_registry_entries()
 
     @staticmethod
-    def create_algorithm_instance(algorithm_name: str):
+    def create_algorithm_instance(algorithm_name: str) -> AbstractSearchAlgorithm:
         """
         Creates and returns a new instance of the search algorithm with the given name.
 

@@ -70,7 +70,7 @@ class PuzzleParser:
 
 
     @staticmethod
-    def read_from_file(filename: str) -> List[List[int]]:
+    def read_from_file(filename: str) -> List[List[Optional[int]]]:
         """
         Reads the input file with the given filename and parses the textual representation
         of the grid contained in it.
@@ -93,7 +93,7 @@ class PuzzleParser:
 
 
     @staticmethod
-    def read_from_string(grid_as_string: str) -> List[List[int]]:
+    def read_from_string(grid_as_string: str) -> List[List[Optional[int]]]:
         """
         Reads and parses the given textual representation of a grid.
 
@@ -121,7 +121,7 @@ class PuzzleParser:
             raise InvalidInputError("Row {0} is not a valid border line.".format(index + 1))
 
 
-    def __parse_cell_line(self, row_index: int) -> List[int]:
+    def __parse_cell_line(self, row_index: int) -> List[Optional[int]]:
         template = _cell_line_template()
         result = []
         if row_index >= len(self._lines):
@@ -144,7 +144,7 @@ class PuzzleParser:
             return None
         return int(self._lines[row_index][char_index])
 
-    def __get_cells(self) -> List[List[int]]:
+    def __get_cells(self) -> List[List[Optional[int]]]:
         result = []
         for index in range(0, 13):
             if index in [1, 2, 3, 5, 6, 7, 9, 10, 11]:
